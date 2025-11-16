@@ -1,0 +1,47 @@
+ORG 0000H
+LJMP MAIN
+
+ORG 0030H
+MAIN:
+    MOV P1, #00H  ; Initialize Port 1 (all LEDs off)
+
+LOOP:
+    CPL P1.0      ; Toggle P1.0 (LED 1)
+    ACALL DELAY_500MS
+    SJMP LOOP
+
+DELAY_1MS:
+    MOV TMOD, #01H
+    MOV TH0, #0FCH
+    MOV TL0, #18H
+    SETB TR0
+WAIT_1MS:
+    JNB TF0, WAIT_1MS
+    CLR TR0
+    CLR TF0
+    RET
+
+DELAY_10MS:
+    MOV R7, #10
+REPEAT_10MS:
+    CPL P1.2      ; Toggle P1.1 (LED 2) every 10ms
+    ACALL DELAY_1MS
+    DJNZ R7, REPEAT_10MS
+    RET
+
+DELAY_100MS:
+    MOV R6, #10
+REPEAT_100MS:
+    CPL P1.1      ; Toggle P1.2 (LED 3) every 100ms
+    ACALL DELAY_10MS
+    DJNZ R6, REPEAT_100MS
+    RET
+
+DELAY_500MS:
+    MOV R5, #5
+REPEAT_500MS:
+    ACALL DELAY_100MS
+    DJNZ R5, REPEAT_500MS
+    RET
+
+END
